@@ -20,6 +20,8 @@ typedef FileList FileListFactory(Compiler compiler);
 FileList _fileListFactory(Compiler compiler) => new FileList(compiler);
 
 class Compiler{
+  static final String CONFIG_FILE_NAME = 'build.yml';
+  
   final Directory _directory;
   final Directory _srcDirectory;
   final Directory _outDirectory;
@@ -41,9 +43,9 @@ class Compiler{
   
   Future _loadConfig(){
     Completer completer = new Completer();
-    File configFile = new File(_directory.path+'/springbokwatcher.yaml');
+    File configFile = new File(_directory.path + '/' + CONFIG_FILE_NAME);
     configFile.exists().then((bool exists){
-      if(!exists) throw new Exception('no springbokwatcher.yaml');
+      if(!exists) throw new Exception('no ' + CONFIG_FILE_NAME);
       return configFile.readAsString();
     }).then((String content){
       _config = loadYaml(content);

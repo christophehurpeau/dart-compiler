@@ -14,7 +14,7 @@ class Watcher extends Compiler{
           .watch(events: FileSystemEvent.MODIFY, recursive: false)
             .listen((FileSystemEvent event){
               if((event as FileSystemModifyEvent).contentChanged){
-                if(event.path.endsWith('/springbokwatcher.yml')){
+                if(event.path.endsWith('/' + Compiler.CONFIG_FILE_NAME)){
                   this.stop();
                   this._loadConfig().then((_) => this.start());
                 }
