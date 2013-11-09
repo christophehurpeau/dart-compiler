@@ -1,0 +1,11 @@
+name:  compiler
+description:  Compile files
+version: 0.1.0
+author: Christophe Hurpeau <christophe@hurpeau.com>
+homepage: https://github.com/christophehurpeau/dart-compiler
+documentation: https://github.com/christophehurpeau/dart-compiler/wiki
+
+dependencies:
+  yaml: '>=0.8.7'
+  preprocessor: '>=0.1.0'
+  unittest: '>=0.8.7'
