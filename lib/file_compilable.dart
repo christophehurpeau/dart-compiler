@@ -4,7 +4,7 @@ class FileCompilable{
   final FileList fileList;
   
   /// The path after the src/ directory
-  String _srcPath;
+  final String srcPath;
   
   /// The source file. This can change is the file is moved.
   File _srcFile;
@@ -14,8 +14,8 @@ class FileCompilable{
   
   bool processing = false;
   
-  FileCompilable(FileList this.fileList, File this._srcFile, String this._srcPath){
-    _outFile = new File(fileList.outPath + '/' + _srcPath); 
+  FileCompilable(FileList this.fileList, File this._srcFile, String this.srcPath){
+    _outFile = new File(fileList.outPath + '/' + srcPath); 
   }
   
   

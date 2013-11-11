@@ -8,8 +8,8 @@ class PreprocessorFileCompilable extends FileCompilable{
   
 
   Future compile(){
-    return this.preprocessor == null ? super.compile()
-        : this.read().then((String content) => this.preprocessor.process(this.fileList.config['consts'], content))
+    return this.read()
+          .then((String content) => this.preprocessor.process(this.fileList.config['consts'], content))
           .then((String content) => this.write(content));
   }
 }

@@ -20,7 +20,7 @@ typedef FileList FileListFactory(Compiler compiler);
 FileList _fileListFactory(Compiler compiler) => new FileList(compiler);
 
 class Compiler{
-  static final String CONFIG_FILE_NAME = 'build.yml';
+  static final String CONFIG_FILE_NAME = 'build.yaml';
   
   final Directory _directory;
   final Directory _srcDirectory;
@@ -29,13 +29,15 @@ class Compiler{
   FileList _fileList;
   YamlMap _config;
   
-  Compiler(Directory directory, FileListFactory fileListFactory): 
-    _directory = directory.absolute, 
-    _srcDirectory = new Directory(directory.path+'/src'),
-    _outDirectory = new Directory(directory.path+'/out'){
+  Compiler(Directory directory, FileListFactory fileListFactory,
+      { String srcName: 'src', String outName: 'out' }): 
+    _directory = directory.absolute, // directory.absolute should be set in a var
+    _srcDirectory = new Directory(directory.absolute.path+'/' + srcName),
+    _outDirectory = new Directory(directory.absolute.path+'/' + outName){
     _fileList = fileListFactory(this);
   }
-
+  
+  String get basePath => _directory.path;
   String get srcPath => _srcDirectory.path;
   String get outPath => _outDirectory.path;
   FileList get fileList => _fileList;
@@ -59,16 +61,27 @@ class Compiler{
       if(!exists) throw new Exception('No src directory...');
       return this._loadConfig();
     })
-      .then((_) => _outDirectory.create())
-      .then((_) => this.process());
+      .then((_) => _outDirectory.create());
   }
   
-  Future process(){
+  Future processAll(){
     _srcDirectory.list(recursive: true).forEach((FileSystemEntity entity){
       if(entity is File) _fileList.appendFile(entity);
     });
   }
   
+  Future processFile(File file){
+    return _fileList.get(file).prepareThenProcess();
+  }
+  
+  Future removeFile(File file){
+    return _fileList.get(file).delete();
+  }
+  
+  void clean(){
+    _fileList.clear();
+    _outDirectory.delete(recursive: true);
+  }
   
   void stop(){
     _fileList.clear();

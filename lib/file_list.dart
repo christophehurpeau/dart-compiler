@@ -13,15 +13,7 @@ class FileList{
   String filePath(String path){
     return path.substring(srcPath.length);
   }
-  
-  
-  FileList appendFile(File file){
-    String fPath = filePath(file.path);
-    print('appendFile: $fPath');
-    files.putIfAbsent(fPath,() => createFile(file,fPath)).prepareThenProcess();
-    return this;
-  }
-  
+
   FileCompilable createFile(File file,String filePath){
     int lastDot = file.path.lastIndexOf('.');
     if(lastDot != -1){
@@ -29,6 +21,17 @@ class FileList{
       return createFileByExtension(file,filePath,extension);
     }
     return new FileCompilable(this,file,filePath);
+  }
+  
+  FileCompilable get(File file){
+    String fPath = filePath(file.path);
+    return files.putIfAbsent(fPath,() => createFile(file,fPath));
+  }
+  
+  Future appendFile(File file){
+    FileCompilable fc = get(file);
+    print('appendFile: ${fc.srcPath}');
+    return fc.prepareThenProcess();
   }
   
   FileCompilable createFileByExtension(File file,String filePath,String extension){
