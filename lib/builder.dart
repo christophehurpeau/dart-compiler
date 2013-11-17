@@ -4,11 +4,14 @@ import 'package:editor_build/editor_build.dart';
 import 'dart:io';
 
 
-build(List<String> args){
+build(List<String> args, [FileListFactory fileListFactory]){
   final opts = BuildOptions.parse(args);
   
-  var compiler = new Compiler(new Directory('.'),(Compiler compiler) => new PreprocessorFileList(compiler),
-            srcName:'web.src', outName:'web');
+  if (fileListFactory == null) {
+    fileListFactory = (Compiler compiler) => new PreprocessorFileList(compiler);
+  }
+  
+  var compiler = new Compiler(new Directory('.'), fileListFactory, srcName:'web.src', outName:'web');
   compiler.start().then((_){
   
     if(opts.clean) compiler.clean();
