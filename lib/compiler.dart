@@ -4,9 +4,11 @@ import 'dart:io';
 import 'dart:async';
 import 'dart:collection';
 import 'package:yaml/yaml.dart';
+import 'package:path/path.dart' as Path;
 
 part 'watcher.dart';
 part 'file_compilable.dart';
+part 'file_ignored.dart';
 part 'file_list.dart';
 
 
@@ -31,9 +33,9 @@ class Compiler{
   
   Compiler(Directory directory, FileListFactory fileListFactory,
       { String srcName: 'src', String outName: 'out' }): 
-    _directory = directory.absolute, // directory.absolute should be set in a var
-    _srcDirectory = new Directory(directory.absolute.path+'/' + srcName),
-    _outDirectory = new Directory(directory.absolute.path+'/' + outName){
+    _directory = new Directory(Path.normalize(directory.absolute.path)), // directory.absolute should be set in a var
+    _srcDirectory = new Directory(Path.normalize(directory.absolute.path)+'/' + srcName),
+    _outDirectory = new Directory(Path.normalize(directory.absolute.path)+'/' + outName){
     _fileList = fileListFactory(this);
   }
   

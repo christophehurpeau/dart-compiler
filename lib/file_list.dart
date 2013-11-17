@@ -15,12 +15,28 @@ class FileList{
   }
 
   FileCompilable createFile(File file,String filePath){
-    int lastDot = file.path.lastIndexOf('.');
-    if(lastDot != -1){
-      String extension = file.path.substring(lastDot +1);
-      return createFileByExtension(file,filePath,extension);
+    String extension = Path.extension(file.path);
+    if (this.isIgnored(file, filePath, extension)) {
+      return new FileIgnored(this, file, filePath, extension);
     }
-    return new FileCompilable(this,file,filePath);
+    
+    if (extension.isEmpty) {
+      return new FileCompilable(this, file, filePath, extension);
+    } else {
+      return createFileByExtension(file, filePath, extension);
+    }
+  }
+  
+  bool isIgnored(File file, String filePath, String extension){
+    String basename = Path.basename(filePath); //TODO
+    String firstLetter = basename[0];
+    if (firstLetter == '.' || firstLetter == '#')
+      return true;
+    
+    if (basename.endsWith('~'))
+      return true;
+    
+    return false;
   }
   
   FileCompilable get(File file){
@@ -35,7 +51,7 @@ class FileList{
   }
   
   FileCompilable createFileByExtension(File file,String filePath,String extension){
-    return new FileCompilable(this,file,filePath);
+    return new FileCompilable(this, file, filePath, extension);
   }
   
   FileList appendPath(String path){

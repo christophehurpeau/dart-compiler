@@ -12,12 +12,19 @@ class FileCompilable{
   /// The destination file.
   File _outFile;
   
-  bool processing = false;
+  bool _processing = false;
   
-  FileCompilable(FileList this.fileList, File this._srcFile, String this.srcPath){
-    _outFile = new File(fileList.outPath + '/' + srcPath); 
-  }
+  final String extension;
   
+  final String basename;
+  
+  FileCompilable(this.fileList, this._srcFile, String srcPath, this.extension)
+    : basename = Path.basename(srcPath), this.srcPath = srcPath
+    {
+      _outFile = new File(fileList.outPath + '/' + srcPath);
+    }
+  
+  bool get isProcessing => _processing;
   
   Future prepareThenProcess(){
     prepare().then((_) => process());
@@ -28,8 +35,8 @@ class FileCompilable{
   }
   
   Future process(){
-    processing = true;
-    return compile().then((_) => processing = false);
+    _processing = true;
+    return compile().then((_) => _processing = false);
   }
   
   Future compile(){
