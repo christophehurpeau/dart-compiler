@@ -1,27 +1,44 @@
 part of compiler;
 
-class Watcher extends Compiler{
+class Watcher{
+  final Compiler compiler;
+  
   final List<StreamSubscription<FileSystemEvent>> _watchers = new List();
   
-  Watcher(Directory directory, Function FileList) : super(directory, FileList);
+  Watcher(Directory directory, FileListFactory fileListFactory)
+      : this.fromCompiler( new Compiler(directory, fileListFactory) );
   
-  @override
+  Watcher.fromCompiler(Compiler this.compiler){
+    compiler.on('beforeStop',(_){
+      _watchers.forEach((w) => w.cancel());
+      _watchers.clear();
+    });
+  }
+  
+  
+
+  String get basePath => compiler.basePath;
+  String get srcPath => compiler.srcPath;
+  String get outPath => compiler.outPath;
+  FileList get fileList => compiler.fileList;
+  Map get config => compiler.config;
+  
   Future start(){
     if(this._watchers.isNotEmpty) this.stop();
     
-    super.start().then((_){
-      this._watchers.add(this._directory
+    compiler.start().then((_){
+      this._watchers.add(compiler.rootDirectory
           .watch(events: FileSystemEvent.MODIFY, recursive: false)
             .listen((FileSystemEvent event){
               if((event as FileSystemModifyEvent).contentChanged){
                 if(event.path.endsWith('/' + Compiler.CONFIG_FILE_NAME)){
                   this.stop();
-                  this._loadConfig().then((_) => this.start());
+                  compiler._loadConfig().then((_) => this.start());
                 }
               }
             }));
 
-      this._watchers.add(_srcDirectory
+      this._watchers.add(compiler.srcDirectory
           .watch(events: FileSystemEvent.ALL, recursive: true)
             .listen(_fileSystemEvent));
     });
@@ -30,11 +47,11 @@ class Watcher extends Compiler{
   void _fileSystemEvent(FileSystemEvent event){
     switch(event.type){
       case FileSystemEvent.CREATE:
-        _fileList.appendPath(event.path);
+        fileList.appendPath(event.path);
         break;
       case FileSystemEvent.MODIFY:
         if((event as FileSystemModifyEvent).contentChanged){
-          _fileList.fileChanged(event.path);
+          fileList.fileChanged(event.path);
         }
         break;
       case FileSystemEvent.MOVE:
@@ -42,16 +59,11 @@ class Watcher extends Compiler{
         throw new Exception('Unsupported yet');
         break;
       case FileSystemEvent.DELETE:
-        _fileList.removePath(event.path);
+        fileList.removePath(event.path);
         break;
     }
   }
 
-  @override
-  void stop(){
-    super.stop();
-    this._watchers.forEach((w) => w.cancel());
-    this._watchers.clear();
-  }
+  void stop() => compiler.stop();
 }
 

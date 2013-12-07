@@ -4,7 +4,7 @@ class PreprocessorFileCompilable extends FileCompilable{
   final Preprocessor preprocessor;
   
   PreprocessorFileCompilable(FileList _fileList, File _srcFile, String _srcPath, String extension)
-      : super(_fileList, _srcFile, _srcPath, extension), preprocessor = new Preprocessor(extension);
+      : super(_fileList,_srcFile,_srcPath, extension), preprocessor = new Preprocessor(extension);
   
 
   Future compile(){

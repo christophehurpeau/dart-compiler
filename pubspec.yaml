@@ -11,3 +11,4 @@ dependencies:
   preprocessor: '>=0.1.2 <0.2.0'
   unittest: '>=0.9.0 <0.10.0'
   yaml: '>=0.9.0 <0.10.0'
+  event_emitter: '>=0.1.1 <0.2.0'

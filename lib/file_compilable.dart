@@ -1,6 +1,7 @@
 part of compiler;
 
 class FileCompilable{
+  final Compiler compiler;
   final FileList fileList;
   
   /// The path after the src/ directory
@@ -18,29 +19,43 @@ class FileCompilable{
   
   final String basename;
   
-  FileCompilable(this.fileList, this._srcFile, String srcPath, this.extension)
-    : basename = Path.basename(srcPath), this.srcPath = srcPath
-    {
-      _outFile = new File(fileList.outPath + '/' + srcPath);
-    }
+  FileCompilable(FileList fileList, this._srcFile, String srcPath, this.extension)
+      : basename = Path.basename(srcPath),
+        this.srcPath = srcPath,
+        this.compiler = fileList.compiler,
+        this.fileList = fileList
+      {
+    _outFile = new File(fileList.outPath + '/' + srcPath); 
+  }
   
   bool get isProcessing => _processing;
   
+  
   Future prepareThenProcess(){
-    prepare().then((_) => process());
+    return prepare().then((_) => process());
   }
   
   Future prepare(){
-    return _outFile.parent.create(recursive: true);
+    compiler.emit('file.beforePrepare',this);
+    compiler.emit('file.prepare',this);
+    return _outFile.parent.create(recursive: true)
+        .whenComplete(() => compiler.emit('file.afterPrepare',this));
   }
   
   Future process(){
+    compiler.emit('file.beforeProcess',this);
     _processing = true;
-    return compile().then((_) => _processing = false);
+    compiler.emit('file.process',this);
+    return compile().whenComplete((){
+      compiler.emit('file.afterProcess',this);
+      _processing = false;
+    });
   }
   
   Future compile(){
-    return this.copy();
+    compiler.emit('file.beforeCompile',this);
+    compiler.emit('file.compile',this);
+    return this.copy().whenComplete(() => compiler.emit('file.afterCompile',this));
   }
   
   Future read(){

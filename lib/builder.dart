@@ -1,7 +1,8 @@
+import 'dart:io';
+
 import 'package:compiler/compiler.dart';
 import 'package:compiler/preprocessor_compiler.dart';
 import 'package:editor_build/editor_build.dart';
-import 'dart:io';
 
 
 build(List<String> args, [FileListFactory fileListFactory]){

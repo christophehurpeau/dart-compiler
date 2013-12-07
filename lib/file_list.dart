@@ -28,15 +28,17 @@ class FileList{
   }
   
   bool isIgnored(File file, String filePath, String extension){
-    String basename = Path.basename(filePath); //TODO
+    String basename = Path.basename(filePath);
     String firstLetter = basename[0];
-    if (firstLetter == '.' || firstLetter == '#')
+    if (firstLetter == '.' || firstLetter == '#') {
       return true;
+    }
     
-    if (basename.endsWith('~'))
+    if (basename.endsWith('~')) {
       return true;
+    }
     
-    return false;
+     return false;
   }
   
   FileCompilable get(File file){
