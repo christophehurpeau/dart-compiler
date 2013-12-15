@@ -44,22 +44,49 @@ class Watcher{
     });
   }
   
+
+  Timer _completedTimer;
+  
+  void deferredCompleted(_) {
+    if (_completedTimer == null || !_completedTimer.isActive) {
+      _completedTimer = new Timer(const Duration(milliseconds: 400),(){
+        compiler.emit('completed', null);
+        _completedTimer = null;
+      });
+    }
+  }
+  
+  void cancelCompletedTimer(){
+    if (_completedTimer != null) {
+      _completedTimer.cancel();
+    }
+  }
+  
+  
   void _fileSystemEvent(FileSystemEvent event){
     switch(event.type){
       case FileSystemEvent.CREATE:
-        fileList.appendPath(event.path);
+        cancelCompletedTimer();
+        fileList.appendPath(event.path)
+          .then(deferredCompleted);
+        
         break;
       case FileSystemEvent.MODIFY:
+        cancelCompletedTimer();
         if((event as FileSystemModifyEvent).contentChanged){
-          fileList.fileChanged(event.path);
+          fileList.fileChanged(event.path)
+            .then(deferredCompleted);
         }
         break;
       case FileSystemEvent.MOVE:
+        cancelCompletedTimer();
         //event.destination
         throw new Exception('Unsupported yet');
         break;
       case FileSystemEvent.DELETE:
-        fileList.removePath(event.path);
+        cancelCompletedTimer();
+        fileList.removePath(event.path)
+          .then(deferredCompleted);
         break;
     }
   }

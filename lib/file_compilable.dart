@@ -36,26 +36,26 @@ class FileCompilable{
   }
   
   Future prepare(){
-    compiler.emit('file.beforePrepare',this);
-    compiler.emit('file.prepare',this);
+    compiler.emit('file.beforePrepare', [this]);
+    compiler.emit('file.prepare', [this]);
     return _outFile.parent.create(recursive: true)
-        .whenComplete(() => compiler.emit('file.afterPrepare',this));
+        .then((_) => compiler.emit('file.afterPrepare', [this]));
   }
   
   Future process(){
-    compiler.emit('file.beforeProcess',this);
+    compiler.emit('file.beforeProcess', [this]);
     _processing = true;
-    compiler.emit('file.process',this);
-    return compile().whenComplete((){
-      compiler.emit('file.afterProcess',this);
+    compiler.emit('file.process', [this]);
+    return compile().then((_){
+      compiler.emit('file.afterProcess', [this]);
       _processing = false;
     });
   }
   
   Future compile(){
-    compiler.emit('file.beforeCompile',this);
-    compiler.emit('file.compile',this);
-    return this.copy().whenComplete(() => compiler.emit('file.afterCompile',this));
+    compiler.emit('file.beforeCompile', [this]);
+    compiler.emit('file.compile', [this]);
+    return this.copy().then((_) => compiler.emit('file.afterCompile', [this]));
   }
   
   Future read(){

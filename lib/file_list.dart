@@ -11,7 +11,7 @@ class FileList{
   Map get config => compiler.config;
   
   String filePath(String path){
-    return path.substring(srcPath.length);
+    return path.substring(srcPath.length).replaceAll(r'\', r'/');
   }
 
   FileCompilable createFile(File file,String filePath){
@@ -48,7 +48,6 @@ class FileList{
   
   Future appendFile(File file){
     FileCompilable fc = get(file);
-    print('appendFile: ${fc.srcPath}');
     return fc.prepareThenProcess();
   }
   
@@ -56,21 +55,19 @@ class FileList{
     return new FileCompilable(this, file, filePath, extension);
   }
   
-  FileList appendPath(String path){
+  Future appendPath(String path){
     String fPath = filePath(path);
-    print('appendFile: $fPath');
-    files.putIfAbsent(fPath,() => createFile(new File(path),fPath)).prepareThenProcess();
+    return files.putIfAbsent(fPath,() => createFile(new File(path),fPath)).prepareThenProcess();
   }
   
-  FileList fileChanged(String path){
+  Future fileChanged(String path){
     String fPath = filePath(path);
-    print('changedFile: $fPath');
-    files[fPath].process();
+    return files[fPath].process();
   }
 
-  FileList removePath(String path){
+  Future removePath(String path){
     String fPath = filePath(path);
-    files.remove(fPath).delete();
+    return files.remove(fPath).delete();
   }
   
   void clear(){

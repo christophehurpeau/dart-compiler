@@ -1,8 +1,11 @@
-import 'dart:io';
+import 'dart:io' hide File;
+import 'dart:io' as Io show File;
+import './file.dart';
 
 import 'package:compiler/compiler.dart';
 import 'package:compiler/preprocessor_compiler.dart';
 import 'package:editor_build/editor_build.dart';
+import 'package:path/path.dart' as Path;
 
 
 build(List<String> args, [FileListFactory fileListFactory]){
@@ -17,12 +20,12 @@ build(List<String> args, [FileListFactory fileListFactory]){
   
     if(opts.clean) compiler.clean();
     
-    if (opts.full) {
+    if (opts.full || args.length == 0) {
       compiler.processAll();
     } else {
       Function map = (String folderName, Function callback){
         return (String filePath){
-          if (!filePath.startsWith('$folderName/')) return;
+          if (!filePath.startsWith('${folderName}${Path.separator}')) return;
           callback(new File('${compiler.basePath}/$filePath'));
         };
       };

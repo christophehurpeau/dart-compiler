@@ -1,10 +1,12 @@
 library compiler;
 
-import 'dart:io';
+import 'dart:io' hide File;
+import 'dart:io' as Io show File;
+import './file.dart';
 import 'dart:async';
 import 'dart:collection';
 import 'package:yaml/yaml.dart';
-import 'package:event_emitter/event_emitter.dart';
+import 'package:dart_events/dart_events.dart';
 import 'package:path/path.dart' as Path;
 
 
@@ -43,7 +45,7 @@ class Compiler extends EventEmitter{
   FileList get fileList => _fileList;
   Map get config => _config;
   
-  Future _loadConfig(){
+  Future _loadConfig() {
     assert(_config == null);
     Completer completer = new Completer();
     File configFile = new File(basePath + '/' + CONFIG_FILE_NAME);
@@ -57,7 +59,7 @@ class Compiler extends EventEmitter{
     return completer.future;
   }
   
-  Future start(){
+  Future start() {
     return srcDirectory.exists().then((bool exists){
       if(!exists) throw new Exception('No src directory...');
       return this._loadConfig();
@@ -65,29 +67,38 @@ class Compiler extends EventEmitter{
       .then((_) => outDirectory.create());
   }
   
-  Future processAll(){
+  Future processAll() {
+    emit('processing', null);
     emit('beforeProcess', null);
     srcDirectory.list(recursive: true).forEach((FileSystemEntity entity){
-      if(entity is File) _fileList.appendFile(entity);
-    }).whenComplete(() => emit('afterProcess', null));
+      if(entity is Io.File) _fileList.appendFile(new File.fromIoFile(entity));
+      else if(entity is Directory) ;
+      else throw new Exception(entity.toString());
+    }).then((_){
+      emit('afterProcess', null);
+      emit('completed', null);
+    });
   }
   
-  Future processFile(File file){
+  Future processFile(File file) {
     emit('beforeProcess', null);
     return _fileList.get(file).prepareThenProcess()
-        .whenComplete(() => emit('afterProcess', null));
+        .then((_){
+          emit('afterProcess', null);
+          emit('completed', null);
+        });
   }
   
-  Future removeFile(File file){
+  Future removeFile(File file) {
     return _fileList.get(file).delete();
   }
   
-  void clean(){
+  void clean() {
     _fileList.clear();
     outDirectory.delete(recursive: true);
   }
   
-  void stop(){
+  void stop() {
     emit('beforeStop', null);
     _fileList.clear();
     emit('afterStop', null);
