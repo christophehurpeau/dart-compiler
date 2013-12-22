@@ -4,16 +4,15 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:compiler/compiler.dart';
-import 'package:compiler/preprocessor_compiler.dart';
 
 
 
 main(List<String> args){
   print('Start watching');
   Directory path = args.length > 0 ? new Directory(args[0]) : Directory.current;
-  var fileListFactory = (Compiler compiler) => new PreprocessorFileList(compiler);
-  var compiler = new Compiler(path, fileListFactory, srcName:'web.src', outName:'web');
-  var watcher = new Watcher.fromCompiler(compiler).start();
+  var fileListFactory = (DirectoryCompiler compiler) => new FileList(compiler);
+  var compiler = new DirectoryCompiler(path, fileListFactory, srcName:'web.src', outName:'web');
+  var watcher = new DirectoryWatcher.fromCompiler(compiler).start();
   
   var server = new Server(path.path);
   if (server.exists()) {

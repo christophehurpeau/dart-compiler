@@ -1,7 +1,7 @@
 part of compiler;
 
 class FileIgnored implements FileCompilable {
-  final Compiler compiler;
+  final DirectoryCompiler compiler;
   final FileList fileList;
   
   /// The path after the src/ directory
@@ -25,7 +25,7 @@ class FileIgnored implements FileCompilable {
       this.fileList = fileList,
       this.compiler = fileList.compiler;
 
-  Future prepareThenProcess() {
+  Future prepareThenCompile() {
     return new Future.value();
   }
 

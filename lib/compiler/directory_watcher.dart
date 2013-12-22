@@ -1,14 +1,14 @@
 part of compiler;
 
-class Watcher{
-  final Compiler compiler;
+class DirectoryWatcher{
+  final DirectoryCompiler compiler;
   
   final List<StreamSubscription<FileSystemEvent>> _watchers = new List();
   
-  Watcher(Directory directory, FileListFactory fileListFactory)
-      : this.fromCompiler( new Compiler(directory, fileListFactory) );
+  DirectoryWatcher(Directory directory, FileListFactory fileListFactory)
+      : this.fromCompiler( new DirectoryCompiler(directory, fileListFactory) );
   
-  Watcher.fromCompiler(Compiler this.compiler){
+  DirectoryWatcher.fromCompiler(DirectoryCompiler this.compiler){
     compiler.on('beforeStop',(_){
       _watchers.forEach((w) => w.cancel());
       _watchers.clear();
@@ -31,7 +31,7 @@ class Watcher{
           .watch(events: FileSystemEvent.MODIFY, recursive: false)
             .listen((FileSystemEvent event){
               if((event as FileSystemModifyEvent).contentChanged){
-                if(event.path.endsWith('/' + Compiler.CONFIG_FILE_NAME)){
+                if(event.path.endsWith('/' + DirectoryCompiler.CONFIG_FILE_NAME)){
                   this.stop();
                   compiler._loadConfig().then((_) => this.start());
                 }

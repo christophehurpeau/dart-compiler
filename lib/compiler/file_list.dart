@@ -2,16 +2,16 @@ part of compiler;
 
 class FileList{
   final Map<String,FileCompilable> files = new HashMap();
-  final Compiler compiler;
+  final DirectoryCompiler compiler;
   
-  FileList(Compiler this.compiler);
+  FileList(DirectoryCompiler this.compiler);
 
   String get srcPath => compiler.srcPath;
   String get outPath => compiler.outPath;
   Map get config => compiler.config;
   
   String filePath(String path){
-    return path.substring(srcPath.length).replaceAll(r'\', r'/');
+    return path.substring(srcPath.length).replaceAll(Path.separator, r'/');
   }
 
   FileCompilable createFile(File file,String filePath){
@@ -23,7 +23,7 @@ class FileList{
     if (extension.isEmpty) {
       return new FileCompilable(this, file, filePath, extension);
     } else {
-      return createFileByExtension(file, filePath, extension);
+      return createFileByExtension(file, filePath, extension.substring(1));
     }
   }
   
@@ -48,7 +48,7 @@ class FileList{
   
   Future appendFile(File file){
     FileCompilable fc = get(file);
-    return fc.prepareThenProcess();
+    return fc.prepareThenCompile();
   }
   
   FileCompilable createFileByExtension(File file,String filePath,String extension){
@@ -57,7 +57,7 @@ class FileList{
   
   Future appendPath(String path){
     String fPath = filePath(path);
-    return files.putIfAbsent(fPath,() => createFile(new File(path),fPath)).prepareThenProcess();
+    return files.putIfAbsent(fPath,() => createFile(new File(path),fPath)).prepareThenCompile();
   }
   
   Future fileChanged(String path){

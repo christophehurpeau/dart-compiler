@@ -1,5 +1,5 @@
 name: compiler
-version: 0.1.3
+version: 0.2.0
 author: Christophe Hurpeau <christophe@hurpeau.com>
 description: Compile files
 homepage: https://github.com/christophehurpeau/dart-compiler
@@ -12,3 +12,4 @@ dependencies:
   unittest: '>=0.9.0 <0.10.0'
   yaml: '>=0.9.0 <0.10.0'
   dart_events: '>=0.0.1'
+  csslib: '>=0.9.1 <0.10.0'

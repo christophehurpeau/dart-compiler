@@ -10,7 +10,7 @@ Create a new file `build.dart`
 
 
 ```
-import 'package:springbok/builder.dart';
+import 'package:compiler/builder.dart';
         
 main(args) {
   build(args);

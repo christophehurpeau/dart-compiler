@@ -3,7 +3,6 @@ import 'dart:io' as Io show File;
 import './file.dart';
 
 import 'package:compiler/compiler.dart';
-import 'package:compiler/preprocessor_compiler.dart';
 import 'package:editor_build/editor_build.dart';
 import 'package:path/path.dart' as Path;
 
@@ -12,10 +11,16 @@ build(List<String> args, [FileListFactory fileListFactory]){
   final opts = BuildOptions.parse(args);
   
   if (fileListFactory == null) {
-    fileListFactory = (Compiler compiler) => new PreprocessorFileList(compiler);
+    fileListFactory = (DirectoryCompiler compiler) => new FileList(compiler);//Preprocessor
   }
   
-  var compiler = new Compiler(new Directory('.'), fileListFactory, srcName:'web.src', outName:'web');
+  final directory = new Directory('.');
+//  final modules = new ModuleList.searchInPackages(
+//      new Directory('${directory.path}${Path.separator}packages'));
+  final modules = new ModuleList();
+  
+  var compiler = new DirectoryCompiler(directory, modules, fileListFactory,
+      srcName:'web.src', outName:'web');
   compiler.start().then((_){
   
     if(opts.clean) compiler.clean();
@@ -26,6 +31,7 @@ build(List<String> args, [FileListFactory fileListFactory]){
       Function map = (String folderName, Function callback){
         return (String filePath){
           if (!filePath.startsWith('${folderName}${Path.separator}')) return;
+          if (filePath.startsWith('${folderName}${Path.separator}packages${Path.separator}')) return;
           callback(new File('${compiler.basePath}/$filePath'));
         };
       };

@@ -8,17 +8,19 @@ import 'dart:collection';
 import 'package:yaml/yaml.dart';
 import 'package:dart_events/dart_events.dart';
 import 'package:path/path.dart' as Path;
+import 'package:compiler/module.dart';
+export 'package:compiler/module.dart';
 
 
-part 'watcher.dart';
-part 'file_compilable.dart';
-part 'file_ignored.dart';
-part 'file_list.dart';
+part 'compiler/directory_watcher.dart';
+part 'compiler/file_compilable.dart';
+part 'compiler/file_ignored.dart';
+part 'compiler/file_list.dart';
 
-typedef FileList FileListFactory(Compiler compiler);
-FileList _fileListFactory(Compiler compiler) => new FileList(compiler);
+typedef FileList FileListFactory(DirectoryCompiler compiler);
+FileList _fileListFactory(DirectoryCompiler compiler) => new FileList(compiler);
 
-class Compiler extends EventEmitter{
+class DirectoryCompiler extends EventEmitter {
   static final String CONFIG_FILE_NAME = 'build.yaml';
   
   final Directory rootDirectory;
@@ -28,11 +30,13 @@ class Compiler extends EventEmitter{
   FileList _fileList;
   YamlMap _config;
   
-  Compiler(Directory directory, FileListFactory fileListFactory,
+  final ModuleList modules;
+  
+  DirectoryCompiler(Directory directory, this.modules, FileListFactory fileListFactory,
       { String srcName: 'src', String outName: 'out' }): 
     rootDirectory = directory.absolute, // directory.absolute should be set in a var
-    srcDirectory = new Directory(directory.absolute.path+'/' + srcName),
-    outDirectory = new Directory(directory.absolute.path+'/' + outName){
+    srcDirectory = new Directory(directory.absolute.path + Path.separator + srcName),
+    outDirectory = new Directory(directory.absolute.path + Path.separator + outName){
     _fileList = fileListFactory(this);
   }
   
@@ -48,7 +52,7 @@ class Compiler extends EventEmitter{
   Future _loadConfig() {
     assert(_config == null);
     Completer completer = new Completer();
-    File configFile = new File(basePath + '/' + CONFIG_FILE_NAME);
+    File configFile = new File(basePath + Path.separator + CONFIG_FILE_NAME);
     configFile.exists().then((bool exists){
       if(!exists) throw new Exception('no ' + CONFIG_FILE_NAME);
       return configFile.readAsString();
@@ -82,7 +86,7 @@ class Compiler extends EventEmitter{
   
   Future processFile(File file) {
     emit('beforeProcess', null);
-    return _fileList.get(file).prepareThenProcess()
+    return _fileList.get(file).prepareThenCompile()
         .then((_){
           emit('afterProcess', null);
           emit('completed', null);
