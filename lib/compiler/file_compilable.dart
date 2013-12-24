@@ -23,6 +23,8 @@ class FileCompilable{
   final String basename;
   
   String _outExtension;
+  
+  final List<CompileError> errors = [];
 
   File get srcFile => _srcFile;
   File get outFile => _outFile;
@@ -38,7 +40,7 @@ class FileCompilable{
     
     _outExtension = _modules.outputExtension(extension);
     
-    _outFile = new File(fileList.outPath + '/' + (_outExtension == null ? srcPath 
+    _outFile = new File(fileList.outPath + (_outExtension == null ? srcPath 
               : srcPath.substring(0, srcPath.length - extension.length) + _outExtension)); 
   }
   
@@ -46,6 +48,7 @@ class FileCompilable{
   
   
   Future prepareThenCompile(){
+    errors.clear();
     return prepare().then((_) => compile());
   }
   
@@ -101,7 +104,12 @@ class FileCompilable{
 //              print('write = $result');
 //            return result;
 //          })
-          .then((result) => _modules.afterWrite(result));
+          .then((result) => _modules.afterWrite(result))
+          //.catchError((e){}, test: (e) => e is CompileError);
+          //we could catch the error and let the editor be aware of the error
+          //but it doesn't work for unsupported files like .less
+          //so instead with an exception this is displayed in the console :)
+          ;
     }
   }
   

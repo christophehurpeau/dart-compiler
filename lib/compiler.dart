@@ -74,14 +74,17 @@ class DirectoryCompiler extends EventEmitter {
   Future processAll() {
     emit('processing', null);
     emit('beforeProcess', null);
-    srcDirectory.list(recursive: true).forEach((FileSystemEntity entity){
-      if(entity is Io.File) _fileList.appendFile(new File.fromIoFile(entity));
+    var futures = [];
+    Future _done = srcDirectory.list(recursive: true).forEach((FileSystemEntity entity){
+      if(entity is Io.File) futures.add(_fileList.appendFile(new File.fromIoFile(entity)));
       else if(entity is Directory) ;
       else throw new Exception(entity.toString());
     }).then((_){
       emit('afterProcess', null);
       emit('completed', null);
     });
+    
+    return _done.then((_) => Future.wait(futures));
   }
   
   Future processFile(File file) {
@@ -107,4 +110,31 @@ class DirectoryCompiler extends EventEmitter {
     _fileList.clear();
     emit('afterStop', null);
   }
+}
+
+const COMPILE_ERROR = 1;
+const COMPILE_WARNING = 2;
+const COMPILE_INFO = 3;
+
+class CompileError{
+  final FileCompilable file;
+  final int type;
+  final String message;
+  final int lineStart;
+  final int lineEnd;
+  final int columnStart;
+  final int columnEnd;
+  
+  CompileError(this.file, {this.type: COMPILE_ERROR, this.lineStart: 0, this.lineEnd: 0,
+              this.columnStart: 0, this.columnEnd: 0, this.message: null});
+  
+  toString(){
+    var res = 'web.src' + file.srcPath + '\n'
+        +'Error: $message on line $lineStart:$columnStart';
+    if (lineEnd != 0) {
+      res += 'to $lineEnd:$columnEnd';
+    }
+    return res;
+  }
+  
 }

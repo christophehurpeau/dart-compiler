@@ -19,7 +19,7 @@ class ModuleList {
   ModuleList() {
     modules.add(new PreprocessorModule());
     modules.add(new CssModule());
-    //modules.add(new LessModule());
+    modules.add(new LessModule());
   }
   
   ModuleList.searchInPackages(Directory packageDirectory) {

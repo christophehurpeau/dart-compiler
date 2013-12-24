@@ -62,7 +62,7 @@ class FileList{
   
   Future fileChanged(String path){
     String fPath = filePath(path);
-    return files[fPath].process();
+    return files[fPath].compile();
   }
 
   Future removePath(String path){
