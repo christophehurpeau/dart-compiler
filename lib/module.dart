@@ -9,6 +9,7 @@ export 'package:compiler/compiler.dart';
 import 'package:compiler/modules/preprocessor_module.dart';
 import 'package:compiler/modules/css_module.dart';
 import 'package:compiler/modules/less_module.dart';
+import 'package:compiler/modules/stylus_module.dart';
 
 
 import 'package:path/path.dart' as Path;
@@ -20,6 +21,7 @@ class ModuleList {
     modules.add(new PreprocessorModule());
     modules.add(new CssModule());
     modules.add(new LessModule());
+    modules.add(new StylusModule());
   }
   
   ModuleList.searchInPackages(Directory packageDirectory) {
