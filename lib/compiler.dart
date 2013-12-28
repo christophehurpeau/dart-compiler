@@ -99,11 +99,19 @@ class DirectoryCompiler extends EventEmitter {
   Future removeFile(File file) {
     return _fileList.get(file).delete();
   }
-  
-  void clean() {
+
+  Future clean(){
     _fileList.clear();
-    outDirectory.delete(recursive: true);
+    var _list = <Future>[];
+    outDirectory.list(recursive: false, followLinks: false)
+      .listen((FileSystemEntity fse) {
+        if (!fse.path.endsWith('packages')) {
+          _list.add(fse.delete(recursive: true));
+        }
+      });
+    return Future.wait(_list);
   }
+  
   
   void stop() {
     emit('beforeStop', null);
