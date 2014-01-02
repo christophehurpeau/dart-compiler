@@ -7,7 +7,7 @@ import 'package:editor_build/editor_build.dart';
 import 'package:path/path.dart' as Path;
 
 
-build(List<String> args, [FileListFactory fileListFactory]){
+Future build(List<String> args, [FileListFactory fileListFactory]){
   final opts = BuildOptions.parse(args);
   
   if (fileListFactory == null) {
@@ -22,7 +22,8 @@ build(List<String> args, [FileListFactory fileListFactory]){
   //TODO : several compilers ?
   var compiler = new DirectoryCompiler(directory, modules, fileListFactory,
       srcName:'web.src', outName:'web');
-  compiler.start().then((_){
+  
+  return compiler.start().then((_){
   
     if(opts.clean) compiler.clean();
     
@@ -42,7 +43,7 @@ build(List<String> args, [FileListFactory fileListFactory]){
         .then((_) => Future.wait(opts.removed.map(map('web.src',compiler.removeFile))));
     }
     
-    _done.then((_){
+    return _done.then((_){
       Iterable files = compiler.fileList.files.values;
       
       final result = new BuildResult();
