@@ -37,7 +37,8 @@ build(List<String> args, [FileListFactory fileListFactory]){
         };
       };
       
-      _done = Future.wait(opts.changed.map(map('web.src',compiler.processFile)))
+      List<Future> futures = opts.changed.map(map('web.src',compiler.processFile));
+      _done = Future.wait(futures)
         .then((_) => Future.wait(opts.removed.map(map('web.src',compiler.removeFile))));
     }
     
@@ -47,6 +48,7 @@ build(List<String> args, [FileListFactory fileListFactory]){
       final result = new BuildResult();
       
       for(FileCompilable file in files){
+        result.addInfo('web.src${file.srcPath}', 1, 'File compiled ' + (new DateTime.now()).toString());
         for (CompileError error in file.errors){
           if (error.type == COMPILE_ERROR) {
             result.addError('web.src${file.srcPath}', error.lineStart, error.message,
@@ -65,6 +67,7 @@ build(List<String> args, [FileListFactory fileListFactory]){
       result.addInfo('foo.html', 25,'no ID found');
       result.addMapping('foo.html', 'out/foo.html');
        */
+      //if (result.toString() != '[]') throw new Exception(result);
       print(result);
     });
   });

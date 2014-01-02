@@ -1,5 +1,5 @@
 name: compiler
-version: 0.2.3
+version: 0.2.4
 author: Christophe Hurpeau <christophe@hurpeau.com>
 description: Compile files
 homepage: https://github.com/christophehurpeau/dart-compiler

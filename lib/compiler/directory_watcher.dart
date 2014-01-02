@@ -5,8 +5,8 @@ class DirectoryWatcher{
   
   final List<StreamSubscription<FileSystemEvent>> _watchers = new List();
   
-  DirectoryWatcher(Directory directory, FileListFactory fileListFactory)
-      : this.fromCompiler( new DirectoryCompiler(directory, fileListFactory) );
+  DirectoryWatcher(Directory directory, ModuleList modules, FileListFactory fileListFactory)
+      : this.fromCompiler( new DirectoryCompiler(directory, modules, fileListFactory) );
   
   DirectoryWatcher.fromCompiler(DirectoryCompiler this.compiler){
     compiler.on('beforeStop',(_){

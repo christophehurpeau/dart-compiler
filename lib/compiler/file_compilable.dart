@@ -100,14 +100,13 @@ class FileCompilable{
 //          })
           .then((result) => write(result))
 //          .then((String result){
-//            if(extension == 'scss' || extension == 'css')
-//              print('write = $result');
+//            throw new Exception('write = $result');
 //            return result;
 //          })
           .then((result) => _modules.afterWrite(result))
           //.catchError((e){}, test: (e) => e is CompileError);
           //we could catch the error and let the editor be aware of the error
-          //but it doesn't work for unsupported files like .less
+          //but it doesn't work
           //so instead with an exception this is displayed in the console :)
           ;
     }
