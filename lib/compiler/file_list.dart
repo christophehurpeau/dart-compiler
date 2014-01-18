@@ -37,8 +37,12 @@ class FileList{
     if (basename.endsWith('~')) {
       return true;
     }
+
+    if (filePath.contains('${Path.separator}packages${Path.separator}')) {
+      return true;
+    }
     
-     return false;
+    return false;
   }
   
   FileCompilable get(File file){

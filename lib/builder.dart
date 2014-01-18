@@ -34,7 +34,7 @@ Future build(List<String> args, [FileListFactory fileListFactory]){
       Function map = (String folderName, Function callback){
         return (String filePath){
           if (!filePath.startsWith('${folderName}${Path.separator}')) return new Future.value();
-          if (filePath.startsWith('${folderName}${Path.separator}packages${Path.separator}')) return new Future.value();
+          if (filePath.contains('${Path.separator}packages${Path.separator}')) return new Future.value();
           return callback(new File('${compiler.basePath}/${filePath}'));
         };
       };
