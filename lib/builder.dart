@@ -49,7 +49,10 @@ Future build(List<String> args, [FileListFactory fileListFactory]){
       
       final result = new BuildResult();
       
-      for(FileCompilable file in files){
+      for(FileCompilable file in files) {
+        if (file is FileIgnored) {
+          continue;
+        }
         result.addInfo('web.src${file.srcPath}', 1, 'File compiled ' + (new DateTime.now()).toString());
         for (CompileError error in file.errors){
           if (error.type == COMPILE_ERROR) {
