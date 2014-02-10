@@ -1,3 +1,5 @@
+[![Build Status](https://drone.io/github.com/christophehurpeau/dart-compiler/status.png)](https://drone.io/github.com/christophehurpeau/dart-compiler/latest)
+
 The compiler can watch your source code and compile it.
 
 
