@@ -4,7 +4,6 @@ dart --version
 pub get
 
 echo "\n> Ensure that the code is warning free"
-dartanalyzer lib/file.dart || exit 1
 dartanalyzer lib/builder.dart || exit 1
 dartanalyzer lib/compiler.dart || exit 1
 dartanalyzer lib/module.dart || exit 1
