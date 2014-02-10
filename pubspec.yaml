@@ -11,5 +11,5 @@ dependencies:
   dart_events: '>=0.0.1'
   editor_build: '>=0.0.4 <0.1.0'
   preprocessor: '>=0.2.0 <0.3.0'
-  unittest: '>=0.9.0 <0.10.0'
+  unittest: '>=0.10.0 <0.11.0'
   yaml: '>=0.9.0 <0.10.0'
