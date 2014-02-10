@@ -3,20 +3,24 @@ part of compiler;
 class FileIgnored implements FileCompilable {
   final DirectoryCompiler compiler;
   final FileList fileList;
-  
+  final List<CompileError> errors = new UnmodifiableListView(const []);
+
   /// The path after the src/ directory
   final String srcPath;
-  
+
   /// The source file. This can change is the file is moved.
   File _srcFile;
-  
+  /// The source file.
+  File get srcFile => _srcFile;
+
   // outFile is always null
   File get outFile => null;
-  
+  File get _outFile => null;
+
   bool get isProcessing => false;
 
   final String extension;
-  
+
   final String basename;
 
   FileIgnored(FileList fileList, this._srcFile, String srcPath, this.extension)
@@ -59,15 +63,26 @@ class FileIgnored implements FileCompilable {
   }
 
 
-  File get _outFile => null; // TODO implement this getter
 
   void set _outFile(File __outFile) {
-    // TODO implement this setter
+    throw new UnsupportedError('');
   }
 
   void set _processing(bool __processing) {
-    // TODO implement this setter
+    throw new UnsupportedError('');
   }
 
-  bool get _processing => null; // TODO implement this getter
+  bool get _processing => throw new UnsupportedError('');
+
+  void set _modules(FileModuleList __modules) {
+    throw new UnsupportedError('');
+  }
+
+  FileModuleList get _modules => throw new UnsupportedError('');
+
+  void set _outExtension(String __outExtension) {
+    throw new UnsupportedError('');
+  }
+
+  String get _outExtension => throw new UnsupportedError('');
 }

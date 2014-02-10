@@ -1,6 +1,4 @@
-import 'dart:io' hide File;
-import 'dart:io' as Io show File;
-import './file.dart';
+import 'dart:io';
 
 import 'package:compiler/compiler.dart';
 import 'package:editor_build/editor_build.dart';
@@ -9,24 +7,24 @@ import 'package:path/path.dart' as Path;
 
 Future build(List<String> args, [FileListFactory fileListFactory]){
   final opts = BuildOptions.parse(args);
-  
+
   if (fileListFactory == null) {
     fileListFactory = (DirectoryCompiler compiler) => new FileList(compiler);//Preprocessor
   }
-  
+
   final directory = new Directory('.');
 //  final modules = new ModuleList.searchInPackages(
 //      new Directory('${directory.path}${Path.separator}packages'));
   final modules = new ModuleList();
-  
+
   //TODO : several compilers ?
   var compiler = new DirectoryCompiler(directory, modules, fileListFactory,
       srcName:'web.src', outName:'web');
-  
+
   return compiler.start().then((_){
-  
+
     if(opts.clean) compiler.clean();
-    
+
     Future _done;
     if (opts.full || args.length == 0) {
       _done = compiler.processAll();
@@ -38,17 +36,17 @@ Future build(List<String> args, [FileListFactory fileListFactory]){
           return callback(new File('${compiler.basePath}/${filePath}'));
         };
       };
-      
+
       List<Future> futures = opts.changed.map(map('web.src',compiler.processFile));
       _done = Future.wait(futures)
         .then((_) => Future.wait(opts.removed.map(map('web.src',compiler.removeFile))));
     }
-    
+
     return _done.then((_){
       Iterable files = compiler.fileList.files.values;
-      
+
       final result = new BuildResult();
-      
+
       for(FileCompilable file in files) {
         if (file is FileIgnored) {
           continue;
